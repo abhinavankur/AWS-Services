@@ -1,0 +1,30 @@
+import json
+import html
+import csv
+import boto3
+import uuid
+import urllib.request
+from boto3.dynamodb.conditions import Key, Attr
+from boto3 import resource
+
+s3 = boto3.client('s3')
+
+
+def lambda_handler(event, context):
+    identityId = event['query']['identityId'];
+    sessionToken = urllib.request.unquote(event['query']['sessionToken'])
+    sequenceItem=""
+    print("session token: " + sessionToken)
+    dynamodb = boto3.client('dynamodb')
+    dynamodb_resource = resource('dynamodb')
+    table = dynamodb_resource.Table("iplTable")
+    userRecord = dynamodb.get_item(TableName='userTable', Key={'identityId':{'S': str(identityId)}})
+    print("session token: " + userRecord['Item']['sessionToken']['S'])
+    if "Item" in userRecord and sessionToken == userRecord['Item']['sessionToken']['S']:
+        sequenceItem = table.scan(FilterExpression=(Key('team0').eq(event['query']['team1']) & Key('team1').eq(event['query']['team2'])) | (Key('team1').eq(event['query']['team1']) & Key('team0').eq(event['query']['team2'])))
+        
+    
+        #filtering_exp = 
+        #response = table.query(KeyConditionExpression=Key('team0').eq('Kings XI Punjab'))
+
+    return sequenceItem

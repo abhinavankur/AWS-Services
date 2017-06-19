@@ -1,0 +1,16 @@
+exports.handler = (event, context, callback) => {
+    // TODO implement
+    var http = require('http');
+    var options = {
+      host: 'https://api.ipify.org',
+      method: 'GET'
+    };
+    
+    http.request(options, function(res) {
+      res.setEncoding('utf8');
+      res.on('data', function (chunk) {
+        console.log("data: " + chunk);
+      });
+    }).end();
+    callback(null, 'done');
+};

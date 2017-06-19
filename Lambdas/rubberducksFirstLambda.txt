@@ -1,0 +1,19 @@
+import os
+import boto3
+import requests
+
+def lambda_handler(event, context):
+    #what_to_print = os.environ.get("what_to_print")
+    #how_many_times = int(os.environ.get("how_many_times"))
+    #dynamodb = boto3.client('dynamodb')
+    # make sure what_to_print and how_many_times values exist
+    #if what_to_print and how_many_times > 0:
+           
+     #   what_to_print = dynamodb.get_item(TableName='RubberDuckTable', Key={'sno': {'N' :'1'}});
+        
+        #print(dynamodb)
+      #  return what_to_print;
+    import requests
+    r = requests.get("http://example.com/foo/bar")
+
+    return r.content

@@ -1,0 +1,49 @@
+import json
+import urllib.parse
+import csv
+import boto3
+import uuid
+import datetime
+from boto3.dynamodb.conditions import Key, Attr
+from boto3 import resource
+from time import gmtime, strftime
+
+def lambda_handler(event, context):
+    s3 = boto3.client('s3')
+    dynamodb = boto3.client('dynamodb')
+    dynamodb_resource = resource('dynamodb')
+    identityId = event['query']['identityId']
+    userRecord = dynamodb.get_item(TableName='userTable', Key={'identityId':{'S': str(identityId)}})
+    table = dynamodb_resource.Table('userTable')
+    if "Item" in userRecord:
+        response = table.update_item(
+        Key={
+            'identityId': identityId
+            },
+        UpdateExpression="set lastLoginTime = :t, sessionToken = :s",
+        ExpressionAttributeValues={
+            ':t': strftime("%Y-%m-%d %H:%M:%S", gmtime()),
+            ':s': event['query']['sessionToken']
+        },
+        ReturnValues="UPDATED_NEW"
+        );
+        return;
+    else:
+        userDetails = event['query']['userDetails']
+        sessionToken = event['query']['sessionToken']
+        keys = ["name", "imageUrl", "email", "lastLoginTime", "sessionToken"]
+        put_query='{"identityId": {"S" : "' + str(identityId) + '"},';
+        userObjs = userDetails.split(',')
+        i=0;
+        for obj in userObjs:
+            put_query +='"'+ keys[i] + '": {"S" : "' + str(obj) + '"},';
+            i=i+1
+        put_query +='"'+ keys[i] + '": {"S" : "' + strftime("%Y-%m-%d %H:%M:%S", gmtime()) + '"},';
+        i = i + 1;
+        put_query += '"' + keys[i] + '": {"S" : "' + sessionToken + '"},';
+        put_query = put_query[:-1]
+        put_query += "}"
+        
+        jsonObject = json.loads(put_query)
+        dynamodb.put_item(TableName='userTable', Item=jsonObject)
+    return strftime("%Y-%m-%d %H:%M:%S", gmtime())

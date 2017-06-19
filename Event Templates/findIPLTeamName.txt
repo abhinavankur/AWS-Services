@@ -1,0 +1,19 @@
+{
+  "currentIntent": {
+    "slots": {
+      "captains": "Abhinav Kohli"
+    },
+    "name": "FindTeam",
+    "confirmationStatus": "None"
+  },
+  "bot": {
+    "alias": "$LATEST",
+    "version": "$LATEST",
+    "name": "IPLTeamIdentifier"
+  },
+  "userId": "John",
+  "invocationSource": "",
+  "outputDialogMode": "Text",
+  "messageVersion": "1.0",
+  "sessionAttributes": {}
+}
